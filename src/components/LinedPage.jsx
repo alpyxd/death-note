@@ -36,23 +36,23 @@ export default function LinedPage({
   };
 
   return (
-    <div className={`relative w-full h-full lined-paper-authentic text-neutral-900 p-4 sm:p-8 md:p-12 flex flex-col justify-between overflow-hidden select-text ${pageSide === 'left' ? 'left-page-gutter' : 'right-page-gutter'}`}>
+    <div className={`relative w-full h-full lined-paper-authentic text-neutral-900 pt-[40px] pb-4 flex flex-col justify-between overflow-hidden select-text ${pageSide === 'left' ? 'left-page-gutter' : 'right-page-gutter'}`}>
       
       {/* Red Margin Line */}
-      <div className="absolute left-6 sm:left-10 md:left-14 top-0 bottom-0 w-px bg-red-400/40 pointer-events-none"></div>
+      <div className="absolute left-8 sm:left-12 top-0 bottom-0 w-px bg-red-400/40 pointer-events-none"></div>
 
       {/* Notebook Lines Area */}
-      <div className="relative z-10 flex-1 ml-2 sm:ml-4 md:ml-8 flex flex-col justify-start space-y-1">
+      <div className="relative z-10 flex-1 pl-10 sm:pl-16 pr-3 sm:pr-6 flex flex-col justify-start">
         
         {/* Render written entries */}
         {entries.map((entry) => (
           <div 
             key={entry.id} 
-            className="group flex items-center justify-between h-8 border-b border-transparent leading-8 select-text"
+            className="group flex items-center justify-between h-8 select-text flex-shrink-0"
           >
             <span 
               onClick={() => onToggleStrike && onToggleStrike(entry.id, !entry.crossedOut)}
-              className={`text-base sm:text-xl md:text-2xl text-neutral-900 cursor-pointer transition-all truncate pr-2 ${entry.crossedOut ? 'line-through decoration-neutral-800 decoration-2 opacity-50' : ''}`}
+              className={`text-base sm:text-xl md:text-2xl text-neutral-900 cursor-pointer transition-all truncate pr-2 leading-8 ${entry.crossedOut ? 'line-through decoration-neutral-800 decoration-2 opacity-50' : ''}`}
               style={{ fontFamily: 'DeathNote, serif' }}
               title="Üstünü çiz / kaldır"
             >
@@ -77,7 +77,7 @@ export default function LinedPage({
 
         {/* Active Typing Line (Pure empty line, no placeholder) */}
         {onAddEntry && (
-          <form onSubmit={handleSubmit} className="h-8 flex items-center">
+          <form onSubmit={handleSubmit} className="h-8 flex items-center flex-shrink-0">
             <input
               type="text"
               value={inputText}
@@ -85,7 +85,7 @@ export default function LinedPage({
               onKeyDown={handleKeyDown}
               enterKeyHint="enter"
               autoCapitalize="words"
-              className="w-full bg-transparent outline-none text-base sm:text-xl md:text-2xl text-neutral-900 caret-black"
+              className="w-full bg-transparent outline-none text-base sm:text-xl md:text-2xl text-neutral-900 caret-black leading-8 h-8"
               style={{ fontFamily: 'DeathNote, serif' }}
             />
           </form>
@@ -93,7 +93,7 @@ export default function LinedPage({
       </div>
 
       {/* Page Number */}
-      <div className="relative z-10 text-right pr-2 text-neutral-400 text-[10px] sm:text-xs select-none">
+      <div className="relative z-10 text-right pr-4 text-neutral-400 text-[10px] sm:text-xs select-none">
         {pageNumber}
       </div>
 
