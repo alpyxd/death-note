@@ -1,0 +1,22 @@
+{
+  "1": [
+    {
+      "id": "seed-1",
+      "text": "Kuro Otoharada",
+      "crossedOut": true,
+      "createdAt": 1789310000000
+    },
+    {
+      "id": "seed-2",
+      "text": "Takuo Shibuimaru",
+      "crossedOut": true,
+      "createdAt": 1789315000000
+    },
+    {
+      "id": "seed-3",
+      "text": "Lind L. Tailor",
+      "crossedOut": true,
+      "createdAt": 1789319000000
+    }
+  ]
+}
