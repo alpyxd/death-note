@@ -135,12 +135,18 @@ export default function App() {
     wallSocket.addEntry(pageNum, entry);
   };
 
-  const handleToggleStrike = (pageNum, id) => {
-    let targetState = true;
-    setPagesData((prev) => {
-      const existing = prev[pageNum] || [];
+  const handleToggleStrike = (pageNum, id, forceState) => {
+    let targetState;
+    if (typeof forceState === 'boolean') {
+      targetState = forceState;
+    } else {
+      const existing = pagesData[pageNum] || [];
       const currentItem = existing.find((item) => item.id === id);
       targetState = currentItem ? !currentItem.crossedOut : true;
+    }
+
+    setPagesData((prev) => {
+      const existing = prev[pageNum] || [];
       return {
         ...prev,
         [pageNum]: existing.map((item) =>
@@ -178,7 +184,7 @@ export default function App() {
           <LinedPage
             entries={page1Entries}
             onAddEntry={(entry) => handleAddEntry(1, entry)}
-            onToggleStrike={(id) => handleToggleStrike(1, id)}
+            onToggleStrike={(id, forceState) => handleToggleStrike(1, id, forceState)}
             onDeleteEntry={(id) => handleDeleteEntry(1, id)}
             pageNumber={1}
             pageSide="right"
@@ -199,7 +205,7 @@ export default function App() {
         <LinedPage
           entries={leftEntries}
           onAddEntry={(entry) => handleAddEntry(leftPageNum, entry)}
-          onToggleStrike={(id) => handleToggleStrike(leftPageNum, id)}
+          onToggleStrike={(id, forceState) => handleToggleStrike(leftPageNum, id, forceState)}
           onDeleteEntry={(id) => handleDeleteEntry(leftPageNum, id)}
           pageNumber={leftPageNum}
           pageSide="left"
@@ -209,7 +215,7 @@ export default function App() {
         <LinedPage
           entries={rightEntries}
           onAddEntry={(entry) => handleAddEntry(rightPageNum, entry)}
-          onToggleStrike={(id) => handleToggleStrike(rightPageNum, id)}
+          onToggleStrike={(id, forceState) => handleToggleStrike(rightPageNum, id, forceState)}
           onDeleteEntry={(id) => handleDeleteEntry(rightPageNum, id)}
           pageNumber={rightPageNum}
           pageSide="right"

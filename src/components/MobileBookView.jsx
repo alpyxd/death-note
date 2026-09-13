@@ -159,7 +159,7 @@ export default function MobileBookView({
         <LinedPage
           entries={entries}
           onAddEntry={(entry) => onAddEntry(pageNum, entry)}
-          onToggleStrike={(id) => onToggleStrike(pageNum, id)}
+          onToggleStrike={(id, forceState) => onToggleStrike(pageNum, id, forceState)}
           onDeleteEntry={(id) => onDeleteEntry(pageNum, id)}
           pageNumber={pageNum}
           pageSide="right"

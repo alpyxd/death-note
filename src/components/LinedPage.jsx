@@ -51,7 +51,7 @@ export default function LinedPage({
             className="group flex items-center justify-between h-8 border-b border-transparent leading-8 select-text"
           >
             <span 
-              onClick={() => onToggleStrike && onToggleStrike(entry.id)}
+              onClick={() => onToggleStrike && onToggleStrike(entry.id, !entry.crossedOut)}
               className={`text-base sm:text-xl md:text-2xl text-neutral-900 cursor-pointer transition-all truncate pr-2 ${entry.crossedOut ? 'line-through decoration-neutral-800 decoration-2 opacity-50' : ''}`}
               style={{ fontFamily: 'DeathNote, serif' }}
               title="Üstünü çiz / kaldır"
