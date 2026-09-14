@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Users, Wifi, WifiOff } from 'lucide-react';
 import Book3D from './components/Book3D';
 import RulePage from './components/RulePage';
-import LinedPage from './components/LinedPage';
+import LinedPage, { MAX_PAGE_ENTRIES } from './components/LinedPage';
 import MobileBookView from './components/MobileBookView';
 import AudioAndScaleControls from './components/AudioAndScaleControls';
 import wallSocket from './services/wallSocket';
@@ -123,16 +123,57 @@ export default function App() {
     }
   }, [pagesData]);
 
+  const book3dRef = useRef(null);
+  const mobileBookRef = useRef(null);
+
+  const handlePageFull = (filledPageNum) => {
+    if (viewMode === 'single') {
+      // In single-page mode (mobile):
+      // Page 1 is mobilePage 2. Next page (Page 2) is mobilePage 3.
+      // General formula: mobilePage for lined page K is K + 1.
+      const targetMobilePage = filledPageNum + 2;
+      if (mobileBookRef.current?.triggerPageChange) {
+        mobileBookRef.current.triggerPageChange(targetMobilePage, 'forward');
+      } else {
+        handleMobilePageChange(targetMobilePage);
+      }
+    } else {
+      // In desktop 3D spread mode:
+      if (filledPageNum === 1 || filledPageNum % 2 === 1) {
+        // Page 1 or any right-side page (3, 5, 7, ...) fills up -> flip forward to next spread!
+        book3dRef.current?.flipNext?.();
+      }
+      // If left-side page (2, 4, 6, ...) fills up, right side of the same spread is already visible!
+    }
+  };
+
   const handleAddEntry = (pageNum, entry) => {
+    let targetPage = pageNum;
+    // If the chosen page is already full, find the first available page with room
+    while ((pagesData[targetPage] || []).length >= MAX_PAGE_ENTRIES) {
+      targetPage++;
+    }
+
+    const currentCount = (pagesData[targetPage] || []).length;
+    const willBeFull = currentCount + 1 >= MAX_PAGE_ENTRIES;
+
     setPagesData((prev) => {
-      const existing = prev[pageNum] || [];
+      const existing = prev[targetPage] || [];
       return {
         ...prev,
-        [pageNum]: [...existing, entry]
+        [targetPage]: [...existing, entry]
       };
     });
+
     // Broadcast to public wall
-    wallSocket.addEntry(pageNum, entry);
+    wallSocket.addEntry(targetPage, entry);
+
+    // If this entry fills the page (reaching MAX_PAGE_ENTRIES):
+    if (willBeFull) {
+      setTimeout(() => {
+        handlePageFull(targetPage);
+      }, 400);
+    }
   };
 
   const handleToggleStrike = (pageNum, id, forceState) => {
@@ -186,6 +227,7 @@ export default function App() {
             onAddEntry={(entry) => handleAddEntry(1, entry)}
             onToggleStrike={(id, forceState) => handleToggleStrike(1, id, forceState)}
             onDeleteEntry={(id) => handleDeleteEntry(1, id)}
+            onNextPage={() => handlePageFull(1)}
             pageNumber={1}
             pageSide="right"
           />
@@ -207,6 +249,7 @@ export default function App() {
           onAddEntry={(entry) => handleAddEntry(leftPageNum, entry)}
           onToggleStrike={(id, forceState) => handleToggleStrike(leftPageNum, id, forceState)}
           onDeleteEntry={(id) => handleDeleteEntry(leftPageNum, id)}
+          onNextPage={() => handlePageFull(leftPageNum)}
           pageNumber={leftPageNum}
           pageSide="left"
         />
@@ -217,6 +260,7 @@ export default function App() {
           onAddEntry={(entry) => handleAddEntry(rightPageNum, entry)}
           onToggleStrike={(id, forceState) => handleToggleStrike(rightPageNum, id, forceState)}
           onDeleteEntry={(id) => handleDeleteEntry(rightPageNum, id)}
+          onNextPage={() => handlePageFull(rightPageNum)}
           pageNumber={rightPageNum}
           pageSide="right"
         />
@@ -268,6 +312,7 @@ export default function App() {
       {viewMode === 'single' ? (
         <div className="w-full max-w-md flex items-center justify-center pb-14 sm:pb-0">
           <MobileBookView
+            ref={mobileBookRef}
             page={mobilePage}
             onPageChange={handleMobilePageChange}
             pagesData={pagesData}
@@ -281,6 +326,7 @@ export default function App() {
       ) : (
         <div className="w-full max-w-5xl flex items-center justify-center pb-14 sm:pb-0">
           <Book3D
+            ref={book3dRef}
             currentSpread={currentSpread}
             onOpenCover={() => {
               setCurrentSpread(1);

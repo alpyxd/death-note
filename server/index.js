@@ -135,13 +135,19 @@ wss.on('connection', (ws, req) => {
           createdAt: Date.now()
         };
 
-        if (!pagesData[pageNum]) pagesData[pageNum] = [];
-        pagesData[pageNum].push(newEntry);
+        const MAX_PER_PAGE = 10;
+        let targetPage = Number(pageNum) || 1;
+        while ((pagesData[targetPage] || []).length >= MAX_PER_PAGE) {
+          targetPage++;
+        }
+
+        if (!pagesData[targetPage]) pagesData[targetPage] = [];
+        pagesData[targetPage].push(newEntry);
         persistData();
 
         broadcast({
           type: 'ADD_ENTRY',
-          pageNum,
+          pageNum: targetPage,
           entry: newEntry
         });
       }

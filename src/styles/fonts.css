@@ -83,6 +83,61 @@
   }
 }
 
+/* Mobile 3D Page Turn Animations */
+@keyframes mobileFlipForward {
+  0% {
+    transform: rotateY(0deg);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
+  }
+  40% {
+    box-shadow: -25px 25px 60px rgba(0, 0, 0, 0.9);
+  }
+  100% {
+    transform: rotateY(-110deg) scale(0.92);
+    box-shadow: -50px 30px 80px rgba(0, 0, 0, 0.85);
+    opacity: 0;
+  }
+}
+
+@keyframes mobileFlipBackward {
+  0% {
+    transform: rotateY(-110deg) scale(0.92);
+    box-shadow: -50px 30px 80px rgba(0, 0, 0, 0.85);
+    opacity: 0;
+  }
+  60% {
+    box-shadow: -25px 25px 60px rgba(0, 0, 0, 0.9);
+  }
+  100% {
+    transform: rotateY(0deg) scale(1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
+    opacity: 1;
+  }
+}
+
+@keyframes mobileIncomingReveal {
+  0% {
+    transform: scale(0.96);
+    filter: brightness(0.75);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.anim-mobile-turn-forward {
+  animation: mobileFlipForward 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.anim-mobile-turn-backward {
+  animation: mobileFlipBackward 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.anim-mobile-incoming {
+  animation: mobileIncomingReveal 0.45s ease-out forwards;
+}
+
 @keyframes coverSwingOpen {
   0% {
     transform: rotateY(0deg);

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import soundEngine from '../audio/soundEngine';
 import musicPlayer from '../audio/musicPlayer';
 import { RotateCw } from 'lucide-react';
 
-export default function Book3D({
+const Book3D = forwardRef(function Book3D({
   currentSpread,
   onNext,
   onPrev,
@@ -11,12 +11,18 @@ export default function Book3D({
   getSpread,
   scale = 1.0,
   onToggleViewMode
-}) {
+}, ref) {
   const [animState, setAnimState] = useState(null); // null | { dir: 'forward' | 'backward', fromSpread: number, toSpread: number, flipping: boolean }
   const [isCoverOpening, setIsCoverOpening] = useState(false);
   const [isCoverClosing, setIsCoverClosing] = useState(false);
   const [showBackCover, setShowBackCover] = useState(false);
   const animTimerRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    flipNext: handleNextClick,
+    flipPrev: handlePrevClick,
+    openCover: handleCoverClick
+  }));
 
   // Touch swipe support
   const touchStartX = useRef(null);
@@ -522,4 +528,6 @@ export default function Book3D({
       </div>
     </div>
   );
-}
+});
+
+export default Book3D;

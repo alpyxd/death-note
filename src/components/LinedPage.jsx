@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import soundEngine from '../audio/soundEngine';
 
+export const MAX_PAGE_ENTRIES = 10;
+
 export default function LinedPage({ 
   entries = [], 
   onAddEntry, 
   onToggleStrike, 
   onDeleteEntry,
+  onNextPage,
   pageNumber,
   pageSide = 'right'
 }) {
   const [inputText, setInputText] = useState('');
+  const isFull = entries.length >= MAX_PAGE_ENTRIES;
 
   const handleChange = (e) => {
     soundEngine.playPenScratch();
@@ -26,12 +30,13 @@ export default function LinedPage({
     if (e) e.preventDefault();
     if (inputText.trim()) {
       soundEngine.playPenScratch();
+      const text = inputText.trim();
+      setInputText('');
       onAddEntry({
         id: 'entry-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
-        text: inputText.trim(),
+        text,
         crossedOut: false,
       });
-      setInputText('');
     }
   };
 
@@ -44,8 +49,8 @@ export default function LinedPage({
       {/* Notebook Lines Area */}
       <div className="relative z-10 flex-1 pl-10 sm:pl-16 pr-3 sm:pr-6 flex flex-col justify-start">
         
-        {/* Render written entries */}
-        {entries.map((entry) => (
+        {/* Render written entries (capped at MAX_PAGE_ENTRIES) */}
+        {entries.slice(0, MAX_PAGE_ENTRIES).map((entry) => (
           <div 
             key={entry.id} 
             className="group flex items-center justify-between h-8 select-text flex-shrink-0"
@@ -75,8 +80,8 @@ export default function LinedPage({
           </div>
         ))}
 
-        {/* Active Typing Line (Pure empty line, no placeholder) */}
-        {onAddEntry && (
+        {/* Active Typing Line (Only rendered when page has room) */}
+        {!isFull && onAddEntry && (
           <form onSubmit={handleSubmit} className="h-8 flex items-center flex-shrink-0">
             <input
               type="text"
@@ -89,6 +94,23 @@ export default function LinedPage({
               style={{ fontFamily: 'DeathNote, serif' }}
             />
           </form>
+        )}
+
+        {/* Page Full Notice: Clean gothic prompt to turn page */}
+        {isFull && onNextPage && (
+          <div 
+            onClick={onNextPage}
+            className="h-8 flex items-center justify-between text-neutral-400 hover:text-neutral-950 cursor-pointer transition-all px-1 select-none text-xs sm:text-sm italic flex-shrink-0 group"
+            style={{ fontFamily: 'DeathNote, serif' }}
+            title="Sonraki sayfaya geç"
+          >
+            <span className="group-hover:underline tracking-wide">
+              [ Bu sayfa doldu — Sonraki sayfaya geç ]
+            </span>
+            <span className="text-base sm:text-lg font-bold group-hover:translate-x-1 transition-transform">
+              →
+            </span>
+          </div>
         )}
       </div>
 
